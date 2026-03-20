@@ -31,8 +31,14 @@ class HomeViewModel: ObservableObject {
             }
             
             guard let data = data else { return }
-            let dataAsString = String(data: data, encoding: .utf8) ?? "Unable to convert data to string"
-            print("Data fetched successfully: \(dataAsString) bytes")
+            
+            do {
+                let coins = try JSONDecoder().decode([Coin].self, from: data)
+                print("DEBUG: Coins \(coins)")
+            } catch let error {
+                print("Error decoding data: \(error.localizedDescription)")
+            }
+            
         }.resume()
             
     }
