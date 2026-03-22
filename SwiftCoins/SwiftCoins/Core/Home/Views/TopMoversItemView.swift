@@ -25,8 +25,9 @@ struct TopMoversItemView: View {
                     .font(.caption)
                     .fontWeight(.bold)
 
-                if let price = coin.currentPrice {
-                    Text(String(format: "$%.2f", price))
+                if let priceValue = coin.currentPrice {
+                    // toCurrency() returns a formatted String
+                    Text(priceValue.toCurrency())
                         .font(.caption)
                         .foregroundColor(.gray)
                 } else {
@@ -37,10 +38,9 @@ struct TopMoversItemView: View {
             }
             // Coin percent change
             if let change = coin.priceChangePercentage24H {
-                Text("\(change)")
-              //  Text(String(format: "%.2f%%", change))
+                Text(change.toPercentString())
                     .font(.title2)
-                    .foregroundColor(change >= 0 ? .green : .red)
+                    .foregroundColor(change > 0 ? .green : .red)
             } else {
                 Text("-")
                     .font(.title2)

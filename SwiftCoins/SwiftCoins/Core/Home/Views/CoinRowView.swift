@@ -43,8 +43,8 @@ struct CoinRowView: View {
             
             // coin price info
             VStack(alignment: .trailing, spacing: 4) {
-                if let price = coin.currentPrice {
-                    Text(String(format: "$%.2f", price))
+                if let priceValue = coin.currentPrice {
+                    Text(priceValue.toCurrency())
                         .font(.subheadline)
                         .fontWeight(.semibold)
                         .padding(.leading, 4)
@@ -54,18 +54,15 @@ struct CoinRowView: View {
                         .fontWeight(.semibold)
                         .padding(.leading, 4)
                 }
-                
+
                 if let change = coin.priceChangePercentage24H {
-                    Text(String(format: "%.2f%%", change))
-                        .font(.caption)
-                        .padding(.leading, 6)
-                        .foregroundColor(change >= 0 ? .green : .red)
+                    Text(change.toPercentString())
+                        .font(.title2)
+                        .foregroundColor(change > 0 ? .green : .red)
                 } else {
                     Text("-")
-                        .font(.caption)
-                        .padding(.leading, 6)
+                        .font(.title2)
                 }
-                
             }
             .padding(.leading, 2)
 

@@ -34,6 +34,40 @@ class HomeViewModel: ObservableObject {
             }
             
             guard let data = data else { return }
+
+            NSLog("[HomeViewModel] Received data size: \(data.count) bytes")
+            if let preview = String(data: data.prefix(3000), encoding: .utf8) {
+                NSLog("[HomeViewModel] Data preview full: \(preview)")
+            }
+
+            // Inspect JSON keys / values on the first element to see if current_price exists and its type
+            do {
+                let obj = try JSONSerialization.jsonObject(with: data)
+                var debugOut = ""
+                if let arr = obj as? [[String: Any]], let first = arr.first {
+                    if let currentPriceValue = first["current_price"] {
+                        let line = "First object's current_price raw: \(type(of: currentPriceValue)) -> \(currentPriceValue)\n"
+                        NSLog("[HomeViewModel] First object's current_price raw value: \(type(of: currentPriceValue)) -> \(currentPriceValue)")
+                        print("[HomeViewModel] First object's current_price raw value: \(type(of: currentPriceValue)) -> \(currentPriceValue)")
+                        debugOut += line
+                    } else {
+                        let line = "First object has no 'current_price' key\n"
+                        NSLog("[HomeViewModel] First object has no 'current_price' key")
+                        print("[HomeViewModel] First object has no 'current_price' key")
+                        debugOut += line
+                    }
+                    if let preview = String(data: data.prefix(3000), encoding: .utf8) {
+                        debugOut += "DATA_PREVIEW:\n" + preview
+                    }
+                    // write to temp file for host inspection
+                    if let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                        let url = docs.appendingPathComponent("swiftcoins-json-debug.txt")
+                        try? debugOut.write(to: url, atomically: true, encoding: .utf8)
+                    }
+                 }
+             } catch {
+                 NSLog("[HomeViewModel] JSONSerialization inspect error: \(error.localizedDescription)")
+             }
             
             do {
                 let decoder = JSONDecoder()
@@ -42,6 +76,22 @@ class HomeViewModel: ObservableObject {
                 print("[HomeViewModel] Decoded coins count: \(coins.count)")
                 if let first = coins.first {
                     print("[HomeViewModel] First coin: \(first.name) (\(first.symbol)) - price: \(first.currentPrice ?? 0)")
+                    NSLog("[HomeViewModel] First coin currentPrice (raw): \(String(describing: first.currentPrice))")
+                    // Mirror dump
+                    let mirror = Mirror(reflecting: first)
+                    for child in mirror.children {
+                        if let label = child.label {
+                            NSLog("[HomeViewModel] first.\(label) = \(child.value)")
+                        }
+                    }
+                    if let enc = try? JSONEncoder().encode(first), let s = String(data: enc, encoding: .utf8) {
+                        NSLog("[HomeViewModel] First coin encoded JSON: \(s)")
+                        // write decoded first coin JSON to Documents for inspection
+                        if let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+                            let url = docs.appendingPathComponent("swiftcoins-decoded-first.json")
+                            try? s.write(to: url, atomically: true, encoding: .utf8)
+                        }
+                    }
                 }
                 DispatchQueue.main.async {
                     self.coins = coins
