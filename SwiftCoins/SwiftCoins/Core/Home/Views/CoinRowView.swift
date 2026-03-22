@@ -6,28 +6,32 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CoinRowView: View {
+    @ObservedObject var viewModel: HomeViewModel
+    let coin: Coin
+    
     var body: some View {
         HStack {
             // market cap rank
-            Text("1")
+            Text("\(Int(coin.marketCapRank ?? 0)) ")
                 .font(.caption)
                 .foregroundColor(.gray)
             // image
-            Image(systemName: "bitcoinsign.circle.fill")
+            KFImage(URL(string: coin.image))
                 .resizable()
                 .scaledToFit()
                 .frame(width: 32, height: 32)
                 .foregroundColor(.orange)
             // coin name
             VStack(alignment: .leading, spacing: 4) {
-                Text("Bitcoin")
+                Text(coin.name)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .padding(.leading, 4)
                 
-                Text("BTC")
+                Text(coin.symbol.uppercased())
                     .font(.caption)
                     .padding(.leading, 6)
                 
@@ -39,15 +43,28 @@ struct CoinRowView: View {
             
             // coin price info
             VStack(alignment: .trailing, spacing: 4) {
-                Text("$20,330,00")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .padding(.leading, 4)
+                if let price = coin.currentPrice {
+                    Text(String(format: "$%.2f", price))
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .padding(.leading, 4)
+                } else {
+                    Text("-")
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .padding(.leading, 4)
+                }
                 
-                Text("-5.6%")
-                    .font(.caption)
-                    .padding(.leading, 6)
-                    .foregroundColor(.red)
+                if let change = coin.priceChangePercentage24H {
+                    Text(String(format: "%.2f%%", change))
+                        .font(.caption)
+                        .padding(.leading, 6)
+                        .foregroundColor(change >= 0 ? .green : .red)
+                } else {
+                    Text("-")
+                        .font(.caption)
+                        .padding(.leading, 6)
+                }
                 
             }
             .padding(.leading, 2)
@@ -58,6 +75,6 @@ struct CoinRowView: View {
     }
 }
 
-#Preview {
-    CoinRowView()
-}
+//#Preview {
+//    CoinRowView()
+//}
