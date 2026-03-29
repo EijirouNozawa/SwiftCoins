@@ -9,13 +9,13 @@ import SwiftUI
 import Kingfisher
 
 struct CoinRowView: View {
-    @ObservedObject var viewModel: HomeViewModel
+    @StateObject var viewModel: HomeViewModel
     let coin: Coin
     
     var body: some View {
         HStack {
             // market cap rank
-            Text("\(Int(coin.marketCapRank ?? 0)) ")
+            Text("\(coin.marketCapRank.map(String.init) ?? "-") ")
                 .font(.caption)
                 .foregroundColor(.gray)
             // image

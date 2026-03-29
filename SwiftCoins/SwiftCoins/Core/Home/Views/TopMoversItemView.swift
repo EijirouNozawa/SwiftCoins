@@ -47,6 +47,8 @@ struct TopMoversItemView: View {
             }
         }
         .frame(width: 140, height: 140)
+        .foregroundColor(Color("BlackBackgroundColor"))
+//        .preferredColorScheme(.dark) // または .dark
         .overlay(
             RoundedRectangle(
                 cornerRadius: 10

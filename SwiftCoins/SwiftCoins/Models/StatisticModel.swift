@@ -1,0 +1,16 @@
+//
+//  StatisticModel.swift
+//  SwiftCoins
+//
+//  Created by 野澤英二郎 on 2026/03/22.
+//
+
+import Foundation
+
+struct StatisticModel: Identifiable {
+    let id = UUID().uuidString
+    let title: String
+    let value: String
+    let percentageChange: Double?
+}
+    
